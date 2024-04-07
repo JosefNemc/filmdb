@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  php:
+    container_name: nette_php_filmDB
+    image: nette_php
+    build: build/php
+    volumes:
+      - ../filmDB/:/var/www/html/web
+    ports:
+      - 80:80
+    environment:
+      - NETTE_DEBUG=1
+
+  database:
+    container_name: mysql_db_filmDB
+    image: mysql_db
+    build: build/database
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+      MYSQL_DATABASE: moviedb
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080

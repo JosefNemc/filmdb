@@ -1,0 +1,15 @@
+routing:
+    routes:
+        - App\Presenters\Api\v1\MoviesPresenter:
+            methods: [GET, POST]
+            path: '/api/v1/movies'
+        - App\Presenters\Api\v1\MoviesPresenter:
+            methods: [GET]
+            path: '/api/v1/movies/<id>'
+            requirements:
+                id: \d+
+        - App\Presenters\Api\v1\MoviesPresenter:
+            methods: [PUT, DELETE]
+            path: '/api/v1/movies/<id>'
+            requirements:
+                id: \d+
