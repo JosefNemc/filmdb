@@ -5,7 +5,7 @@ namespace App\Presenters;
 
 use App\Model\Movies;
 
-use Nette\Application\Responses\JsonResponse;
+
 use Nette\Application\UI\Presenter;
 
 class MoviesPresenter extends Presenter
@@ -24,21 +24,20 @@ class MoviesPresenter extends Presenter
     public function startup()
     {
         parent::startup();
-        $this->token = '1234';
+        $this->token = '1234'; // Token pro autorizaci
     }
 
 
     public function actionDefault(int $id = null) //bez parametru vrátí seznam všech filmů
     {
-        bdump($this->getHttpRequest());
 
-
-        //seznam všech filmů
-        if ($this->getHttpRequest()->getHeader('Authorization') !== $this->token) {
+        if ($this->getHttpRequest()->getHeader('Authorization') !== $this->token)
+        {
                 //Autorizace v pořádku máme GET
                 if ($this->getHttpRequest()->isMethod('GET') && $id === null) {
                     $movies = $this->movies->fetchAll();
-                    foreach ($movies as $movie) {
+                    foreach ($movies as $movie)
+                    {
                         $moviesData[] = [
                             'id' => $movie->id,
                             'name' => $movie->name,
@@ -46,8 +45,8 @@ class MoviesPresenter extends Presenter
                             'description' => $movie->description
                         ];
                     }
-                    dump($moviesData,'Seznam filmů jen GET bez ID');
-                    // $this->sendJson($response);
+
+                    $this->sendJson($moviesData);
                 }
                 else
                 {
@@ -60,52 +59,50 @@ class MoviesPresenter extends Presenter
                             'description' => $movies->description
                         ];
 
-                    dump($moviesData,'Jeden film ');
-                    // $this->sendJson($response);
+
+                    $this->sendJson($moviesData);
                 }
 
             if ($this->getHttpRequest()->isMethod('POST') && $id === null) {
                 $requestData = $this->getHttpRequest()->getPost(); // Získání dat z požadavku
-                if (isset($requestData['name']) && isset($requestData['author']) && isset($requestData['description'])) {
-                    $this->movies->create($requestData);
-                   dump($requestData,'vložení filmu - true');
-                    //$this->sendJson(['success' => true]);
-                }
+                if (isset($requestData['name']) && isset($requestData['author']) && isset($requestData['description']))
+                    {
+                       $this->movies->create($requestData);
+                       $this->sendJson(['success' => true]);
+                    }
                 else
-                {
-                    dump('Missing data','vložení filmu - false');
-                   // $this->sendJson(['error' => 'Missing data']);
-                }
+                    {
+
+                       $this->sendJson(['error' => 'Missing data']);
+                    }
 
             }
             elseif($this->getHttpRequest()->isMethod('PUT') && $id !== null)
             {
                 $requestData = $this->getHttpRequest()->getPost(); // Získání dat z POST požadavku
-                if (isset($requestData['name']) && isset($requestData['author']) && isset($requestData['description']) && ($id !== null)) {
-                    $this->movies->update($id,$requestData);
-                    dump($requestData,'aktualizace filmu - true');
-                    //$this->sendJson(['success' => true]);
-                }
+                if (isset($requestData['name']) && isset($requestData['author']) && isset($requestData['description']) && ($id !== null))
+                    {
+                        $this->movies->update($id,$requestData);
+                        $this->sendJson(['success' => true]);
+                    }
                 else
-                {
-                    dump('Missing data','aktualizace filmu - false');
-                    // $this->sendJson(['error' => 'Missing data']);
+                    {
+                       $this->sendJson(['error' => 'Missing data']);
+                    }
                 }
-            }
             elseif($this->getHttpRequest()->isMethod('DELETE') && $id !== null)
             {
                 $this->movies->delete($id);
-                dump('Smazání filmu - true');
-                // $this->sendJson(['success' => true]);
+                $this->sendJson(['success' => true]);
             }
 
         }
 
         else
         {
-            dump('Unauthorized');
-            // $this->getHttpResponse()->setCode(401);
-            // $this->sendJson(['error' => 'Unauthorized']);
+
+            $this->getHttpResponse()->setCode(401);
+            $this->sendJson(['error' => 'Unauthorized']);
         }
 
     }
